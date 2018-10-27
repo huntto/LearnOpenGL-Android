@@ -19,6 +19,8 @@ public:
 
 private:
     Shader shader_;
+    GLuint VBO;
+    GLuint VAO;
 };
 
 #endif //ANDROID_OPENGLES_3_0_TRIANGLE_H

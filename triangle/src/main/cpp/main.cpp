@@ -106,7 +106,6 @@ void Application::Draw() {
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-
         Triangle *triangle = static_cast<Triangle *>(data_);
         triangle->Draw();
         eglSwapBuffers(egl_display_, egl_surface_);
