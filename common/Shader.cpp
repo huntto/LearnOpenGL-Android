@@ -2,7 +2,7 @@
 // Created by xiangtao on 2018/10/27.
 //
 
-#include "shader.h"
+#include "Shader.h"
 
 #include <malloc.h>
 
@@ -44,7 +44,7 @@ static GLuint LoadShader(GLenum type, const char *shaderSrc) {
             char *infoLog = static_cast<char *>(malloc(sizeof(char) * infoLen));
 
             glGetShaderInfoLog(shader, infoLen, NULL, infoLog);
-            LOGE(kTag, "Error compiling shader:\n%s\n", infoLog);
+            LOGE(kTag, "Error compiling shader:\n%s\n%s\n", shaderSrc, infoLog);
 
             free(infoLog);
         }

@@ -6,7 +6,7 @@
 #include <android/native_window.h>
 
 #include "log.h"
-#include "Triangle.h"
+#include "MixTexture.h"
 
 static const char *kTag = "Triangle";
 

@@ -1,7 +1,7 @@
 //
 // Created by xiangtao on 2018/10/27.
 //
-#include "triangle.h"
+#include "Triangle.h"
 
 #include <GLES3/gl3.h>
 #include <log.h>

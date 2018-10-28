@@ -1,4 +1,4 @@
-#include "application.h"
+#include "Application.h"
 
 #include <android/log.h>
 #include <android_native_app_glue.h>
@@ -7,6 +7,7 @@
 #include <EGL/egl.h>
 
 #include "log.h"
+#include "ResourceManager.h"
 
 static float GetCurrentTime() {
     struct timespec time;
@@ -52,6 +53,7 @@ void android_main(struct android_app *app) {
     Application *my_app = new Application;
     float last_time;
 
+    ResourceManager::Context = app;
     app->onAppCmd = HandleCommand;
     app->userData = my_app;
 

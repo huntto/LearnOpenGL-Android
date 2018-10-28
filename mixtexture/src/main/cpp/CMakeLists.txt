@@ -20,19 +20,19 @@ include_directories(${COMMON_SRC_DIR}
         ${EXTERNALS_SRC_DIR}/glm)
 
 add_library(
-        native-lib SHARED
-        main.cpp
-        Triangle.cpp
+        texture SHARED
+        app.cpp
+        MixTexture.cpp
         ${COMMON_SRC}
 )
 
 target_include_directories(
-        native-lib
+        texture
         PRIVATE
         ${ANDROID_NDK}/sources/android/native_app_glue)
 
 target_link_libraries(
-        native-lib
+        texture
 
         android
         EGL
