@@ -1,19 +1,19 @@
 //
 // Created by xiangtao on 2018/10/27.
 //
-#include "MixTexture.h"
+#include "mix_texture.h"
 
 #include <GLES3/gl3.h>
 #include <log.h>
-#include <ResourceManager.h>
+#include <resource_manager.h>
 
 const char *kTag = "Triangle";
 
-Triangle::Triangle() {
-    std::string vertex_shader_path = ResourceManager::ExtractAssetFileToInternal("vertex_shader.glsl");
-    std::string fragment_shader_path = ResourceManager::ExtractAssetFileToInternal("fragment_shader.glsl");
-    std::string awesomeface_path = ResourceManager::ExtractAssetFileToInternal("awesomeface.png");
-    std::string container_path = ResourceManager::ExtractAssetFileToInternal("container.jpg");
+MixTexture::MixTexture() {
+    std::string vertex_shader_path = ResourceManager::ExtractAssetFileToInternal("vertex_shader.glsl", true);
+    std::string fragment_shader_path = ResourceManager::ExtractAssetFileToInternal("fragment_shader.glsl", true);
+    std::string awesomeface_path = ResourceManager::ExtractAssetFileToInternal("awesomeface.png", true);
+    std::string container_path = ResourceManager::ExtractAssetFileToInternal("container.jpg", true);
 
 
     shader_ = ResourceManager::LoadShader(vertex_shader_path, fragment_shader_path, "mix-textures");
@@ -32,13 +32,13 @@ Triangle::Triangle() {
             1, 2, 3
     };
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    glGenVertexArrays(1, &vao_);
+    glGenBuffers(1, &vbo_);
+    glGenBuffers(1, &ebo_);
 
-    glBindVertexArray(VAO);
+    glBindVertexArray(vao_);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
@@ -48,17 +48,17 @@ Triangle::Triangle() {
                           (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glBindVertexArray(0);
 }
 
-void Triangle::Update(float delta_time) {
+void MixTexture::Update(float delta_time) {
 
 }
 
-void Triangle::Draw() {
+void MixTexture::Draw() {
     shader_.Use();
 
     glActiveTexture(GL_TEXTURE0);
@@ -69,10 +69,10 @@ void Triangle::Draw() {
     shader_.SetInteger("texture1", 0);
     shader_.SetInteger("texture2", 1);
 
-    glBindVertexArray(VAO);
+    glBindVertexArray(vao_);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-Triangle::~Triangle() {
+MixTexture::~MixTexture() {
 
 }

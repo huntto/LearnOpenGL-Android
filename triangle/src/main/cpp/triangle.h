@@ -6,7 +6,6 @@
 #define ANDROID_OPENGLES_3_0_TRIANGLE_H
 
 #include <Shader.h>
-#include <Texture2D.h>
 
 class Triangle {
 public:
@@ -20,11 +19,8 @@ public:
 
 private:
     Shader shader_;
-    GLuint VBO;
-    GLuint EBO;
-    GLuint VAO;
-    Texture2D texture1_;
-    Texture2D texture2_;
+    GLuint vbo_;
+    GLuint vao_;
 };
 
 #endif //ANDROID_OPENGLES_3_0_TRIANGLE_H

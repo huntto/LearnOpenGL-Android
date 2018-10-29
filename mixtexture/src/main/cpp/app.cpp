@@ -6,10 +6,7 @@
 #include <android/native_window.h>
 
 #include "log.h"
-#include "MixTexture.h"
-
-static const char *kTag = "Triangle";
-
+#include "mix_texture.h"
 
 static EGLint GetContextRenderableType(EGLDisplay eglDisplay) {
 #ifdef EGL_KHR_create_context
@@ -106,8 +103,8 @@ void Application::Draw() {
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-        Triangle *triangle = static_cast<Triangle *>(data_);
-        triangle->Draw();
+        MixTexture *mix_texture = static_cast<MixTexture *>(data_);
+        mix_texture->Draw();
         eglSwapBuffers(egl_display_, egl_surface_);
     }
 }
@@ -115,8 +112,8 @@ void Application::Draw() {
 bool Application::Init(EGLNativeWindowType egl_native_window,
                        EGLNativeDisplayType egl_native_display) {
     if (CreateWindow(egl_native_window, egl_native_display)) {
-        Triangle *triangle = new Triangle;
-        data_ = triangle;
+        MixTexture *mix_texture = new MixTexture;
+        data_ = mix_texture;
         return true;
     }
     return false;
@@ -124,15 +121,15 @@ bool Application::Init(EGLNativeWindowType egl_native_window,
 
 void Application::Destroy() {
     if (data_ != nullptr) {
-        Triangle *triangle = static_cast<Triangle *>(data_);
-        delete triangle;
+        MixTexture *mix_texture = static_cast<MixTexture *>(data_);
+        delete mix_texture;
         data_ = nullptr;
     }
 }
 
 void Application::Update(float delta_time) {
     if (data_ != nullptr) {
-        Triangle *triangle = static_cast<Triangle *>(data_);
-        triangle->Update(delta_time);
+        MixTexture *mix_texture = static_cast<MixTexture *>(data_);
+        mix_texture->Update(delta_time);
     }
 }

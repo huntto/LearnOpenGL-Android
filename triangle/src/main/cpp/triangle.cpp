@@ -1,7 +1,7 @@
 //
 // Created by xiangtao on 2018/10/27.
 //
-#include "Triangle.h"
+#include "triangle.h"
 
 #include <GLES3/gl3.h>
 #include <log.h>
@@ -36,12 +36,12 @@ Triangle::Triangle() {
             0.5f, -0.5f, 0.0f
     };
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    glGenVertexArrays(1, &vao_);
+    glGenBuffers(1, &vbo_);
 
-    glBindVertexArray(VAO);
+    glBindVertexArray(vao_);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
@@ -57,7 +57,7 @@ void Triangle::Update(float delta_time) {
 void Triangle::Draw() {
     shader_.Use();
 
-    glBindVertexArray(VAO);
+    glBindVertexArray(vao_);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }

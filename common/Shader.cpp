@@ -2,7 +2,7 @@
 // Created by xiangtao on 2018/10/27.
 //
 
-#include "Shader.h"
+#include "shader.h"
 
 #include <malloc.h>
 
@@ -10,12 +10,7 @@
 
 static const char *kTag = "Shader";
 
-Shader &Shader::Use() {
-    glUseProgram(this->ID);
-    return *this;
-}
-
-static GLuint LoadShader(GLenum type, const char *shaderSrc) {
+static GLuint LoadShader(GLenum type, const char *shader_src) {
     GLuint shader;
     GLint compiled;
 
@@ -27,7 +22,7 @@ static GLuint LoadShader(GLenum type, const char *shaderSrc) {
     }
 
     // Load the shader source
-    glShaderSource(shader, 1, &shaderSrc, NULL);
+    glShaderSource(shader, 1, &shader_src, NULL);
 
     // Compile the shader
     glCompileShader(shader);
@@ -36,17 +31,17 @@ static GLuint LoadShader(GLenum type, const char *shaderSrc) {
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
 
     if (!compiled) {
-        GLint infoLen = 0;
+        GLint info_length = 0;
 
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_length);
 
-        if (infoLen > 1) {
-            char *infoLog = static_cast<char *>(malloc(sizeof(char) * infoLen));
+        if (info_length > 1) {
+            char *info_log = static_cast<char *>(malloc(sizeof(char) * info_length));
 
-            glGetShaderInfoLog(shader, infoLen, NULL, infoLog);
-            LOGE(kTag, "Error compiling shader:\n%s\n%s\n", shaderSrc, infoLog);
+            glGetProgramInfoLog(shader, info_length, NULL, info_log);
+            LOGE(kTag, "Error compiling shader:\n%s\n%s\n", shader_src, info_log);
 
-            free(infoLog);
+            free(info_log);
         }
 
         glDeleteShader(shader);
@@ -58,95 +53,59 @@ static GLuint LoadShader(GLenum type, const char *shaderSrc) {
 }
 
 void Shader::Compile(const GLchar *vertex_shader_source, const GLchar *fragment_shader_source) {
-    GLuint vertex_shader_id;
-    GLuint fragment_shader_id;
+    GLuint vertex_shader_id_;
+    GLuint fragment_shader_id_;
     GLint linked;
 
     // Load the vertex/fragment shaders
-    vertex_shader_id = LoadShader(GL_VERTEX_SHADER, vertex_shader_source);
+    vertex_shader_id_ = LoadShader(GL_VERTEX_SHADER, vertex_shader_source);
 
-    if (vertex_shader_id == 0) {
+    if (vertex_shader_id_ == 0) {
         return;
     }
 
-    fragment_shader_id = LoadShader(GL_FRAGMENT_SHADER, fragment_shader_source);
+    fragment_shader_id_ = LoadShader(GL_FRAGMENT_SHADER, fragment_shader_source);
 
-    if (fragment_shader_id == 0) {
-        glDeleteShader(vertex_shader_id);
+    if (fragment_shader_id_ == 0) {
+        glDeleteShader(vertex_shader_id_);
         return;
     }
 
     // Create the program object
-    ID = glCreateProgram();
+    id_ = glCreateProgram();
 
-    if (ID == 0) {
+    if (id_ == 0) {
         return;
     }
 
-    glAttachShader(ID, vertex_shader_id);
-    glAttachShader(ID, fragment_shader_id);
+    glAttachShader(id_, vertex_shader_id_);
+    glAttachShader(id_, fragment_shader_id_);
 
     // Link the program
-    glLinkProgram(ID);
+    glLinkProgram(id_);
 
     // Check the link status
-    glGetProgramiv(ID, GL_LINK_STATUS, &linked);
+    glGetProgramiv(id_, GL_LINK_STATUS, &linked);
 
     if (!linked) {
-        GLint infoLen = 0;
+        GLint info_length = 0;
 
-        glGetProgramiv(ID, GL_INFO_LOG_LENGTH, &infoLen);
+        glGetProgramiv(id_, GL_INFO_LOG_LENGTH, &info_length);
 
-        if (infoLen > 1) {
-            char *infoLog = static_cast<char *>(malloc(sizeof(char) * infoLen));
+        if (info_length > 1) {
+            char *info_log = static_cast<char *>(malloc(sizeof(char) * info_length));
 
-            glGetProgramInfoLog(ID, infoLen, NULL, infoLog);
-            LOGE(kTag, "Error linking program:\n%s\n", infoLog);
+            glGetProgramInfoLog(id_, info_length, NULL, info_log);
+            LOGE(kTag, "Error linking program:\n%s\n", info_log);
 
-            free(infoLog);
+            free(info_log);
         }
 
-        glDeleteProgram(ID);
+        glDeleteProgram(id_);
         return;
     }
 
     // Free up no longer needed shader resources
-    glDeleteShader(vertex_shader_id);
-    glDeleteShader(fragment_shader_id);
-}
-
-void Shader::SetFloat(const GLchar *name, GLfloat value) {
-    glUniform1f(glGetUniformLocation(this->ID, name), value);
-}
-
-void Shader::SetInteger(const GLchar *name, GLint value) {
-    glUniform1i(glGetUniformLocation(this->ID, name), value);
-}
-
-void Shader::SetVector2f(const GLchar *name, GLfloat x, GLfloat y) {
-    glUniform2f(glGetUniformLocation(this->ID, name), x, y);
-}
-
-void Shader::SetVector2f(const GLchar *name, const glm::vec2 &value) {
-    glUniform2f(glGetUniformLocation(this->ID, name), value.x, value.y);
-}
-
-void Shader::SetVector3f(const GLchar *name, GLfloat x, GLfloat y, GLfloat z) {
-    glUniform3f(glGetUniformLocation(this->ID, name), x, y, z);
-}
-
-void Shader::SetVector3f(const GLchar *name, const glm::vec3 &value) {
-    glUniform3f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z);
-}
-
-void Shader::SetVector4f(const GLchar *name, GLfloat x, GLfloat y, GLfloat z, GLfloat w) {
-    glUniform4f(glGetUniformLocation(this->ID, name), x, y, z, w);
-}
-
-void Shader::SetVector4f(const GLchar *name, const glm::vec4 &value) {
-    glUniform4f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z, value.w);
-}
-
-void Shader::SetMatrix4(const GLchar *name, const glm::mat4 &matrix) {
-    glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, GL_FALSE, glm::value_ptr(matrix));
+    glDeleteShader(vertex_shader_id_);
+    glDeleteShader(fragment_shader_id_);
 }

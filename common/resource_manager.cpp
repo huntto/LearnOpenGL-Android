@@ -2,10 +2,11 @@
 // Created by xiangtao on 2018/10/27.
 //
 
-#include "ResourceManager.h"
+#include "resource_manager.h"
 
 #include <android/asset_manager.h>
 #include <android_native_app_glue.h>
+
 #include <fstream>
 #include <sstream>
 
@@ -13,18 +14,19 @@
 
 static const char *kTag = "ResourceManager";
 
-void *ResourceManager::Context = nullptr;
-std::map<std::string, Texture2D>    ResourceManager::Textures;
-std::map<std::string, Shader>       ResourceManager::Shaders;
+void *ResourceManager::context = nullptr;
 
-std::string
-ResourceManager::ExtractAssetFileToInternal(std::string asset_filename, bool force_replace) {
+std::map<std::string, Texture2D>    ResourceManager::textures_;
+std::map<std::string, Shader>       ResourceManager::shaders_;
 
-    if (Context == nullptr) {
+std::string ResourceManager::ExtractAssetFileToInternal(const std::string &asset_filename,
+                                                        bool force_replace) {
+
+    if (context == nullptr) {
         LOGE(kTag, "Context is null.");
         return std::string();
     }
-    android_app *app = static_cast<android_app *>(Context);
+    android_app *app = static_cast<android_app *>(context);
 
     std::string filename = app->activity->internalDataPath;
     filename += "/" + asset_filename;
@@ -55,36 +57,36 @@ ResourceManager::ExtractAssetFileToInternal(std::string asset_filename, bool for
 }
 
 
-Shader
-ResourceManager::LoadShader(std::string vertex_shader_path, std::string fragment_shader_path,
-                            std::string name) {
-    Shaders[name] = LoadShaderFromFile(vertex_shader_path, fragment_shader_path);
-    return Shaders[name];
+Shader ResourceManager::LoadShader(const std::string &vertex_shader_path,
+                                   const std::string &fragment_shader_path,
+                                   const std::string &name) {
+    shaders_[name] = LoadShaderFromFile(vertex_shader_path, fragment_shader_path);
+    return shaders_[name];
 }
 
-Shader ResourceManager::GetShader(std::string name) {
-    return Shaders[name];
+Shader ResourceManager::GetShader(const std::string &name) {
+    return shaders_[name];
 }
 
-Texture2D ResourceManager::LoadTexture(std::string filepath, std::string name) {
-    Textures[name] = LoadTextureFromFile(filepath);
-    return Textures[name];
+Texture2D ResourceManager::LoadTexture(const std::string &filepath,
+                                       const std::string &name) {
+    textures_[name] = LoadTextureFromFile(filepath);
+    return textures_[name];
 }
 
-Texture2D ResourceManager::GetTexture(std::string name) {
-    return Textures[name];
+Texture2D ResourceManager::GetTexture(const std::string &name) {
+    return textures_[name];
 }
 
 void ResourceManager::Clear() {
-    // (Properly) delete all shaders
-    for (auto iter : Shaders)
-        glDeleteProgram(iter.second.ID);
-    // (Properly) delete all textures
-    for (auto iter : Textures)
-        glDeleteTextures(1, &iter.second.ID);
+    for (auto iter : shaders_)
+        iter.second.Delete();
+
+    for (auto iter : textures_)
+        iter.second.Delete();
 }
 
-static std::string ReadStringFromFile(std::string filepath) {
+static std::string ReadStringFromFile(const std::string &filepath) {
     std::string data;
     try {
         std::ifstream file_stream(filepath);
@@ -98,8 +100,8 @@ static std::string ReadStringFromFile(std::string filepath) {
     return std::string();
 }
 
-Shader ResourceManager::LoadShaderFromFile(std::string vertex_shader_path,
-                                           std::string fragment_shader_path) {
+Shader ResourceManager::LoadShaderFromFile(const std::string &vertex_shader_path,
+                                           const std::string &fragment_shader_path) {
     std::string vertex_shader_src = ReadStringFromFile(vertex_shader_path);
     std::string fragment_shader_src = ReadStringFromFile(fragment_shader_path);
 
@@ -108,7 +110,7 @@ Shader ResourceManager::LoadShaderFromFile(std::string vertex_shader_path,
     return shader;
 }
 
-Texture2D ResourceManager::LoadTextureFromFile(std::string filepath) {
+Texture2D ResourceManager::LoadTextureFromFile(const std::string &filepath) {
     Texture2D texture;
 
     texture.Generate(filepath);

@@ -22,7 +22,7 @@ include_directories(${COMMON_SRC_DIR}
 add_library(
         texture SHARED
         app.cpp
-        MixTexture.cpp
+        mix_texture.cpp
         ${COMMON_SRC}
 )
 

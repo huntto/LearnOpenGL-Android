@@ -2,7 +2,7 @@
 // Created by xiangtao on 2018/10/27.
 //
 
-#include "Texture2D.h"
+#include "texture2d.h"
 #include "log.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -11,50 +11,53 @@
 
 static const char *kTag = "Texture2D";
 
-Texture2D::Texture2D()
-        : Width(0), Height(0), Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT),
-          Wrap_T(GL_REPEAT), Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR) {
-    glGenTextures(1, &this->ID);
-}
-
-void Texture2D::Generate(std::string filename) {
+void Texture2D::Generate(const std::string &filename,
+                         GLint wrap_s,
+                         GLint wrap_t,
+                         GLint filter_min,
+                         GLint filter_max) {
     int channels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load(filename.c_str(), &Width, &Height, &channels, 0);
+    unsigned char *data = stbi_load(filename.c_str(), &width_, &height_, &channels, 0);
 
+    GLuint internal_format;
+    GLuint image_format;
     switch (channels) {
         case 1:
-            Image_Format = GL_RED;
-            Internal_Format = GL_RED;
+            image_format = GL_RED;
+            internal_format = GL_RED;
             break;
         case 3:
-            Image_Format = GL_RGB;
-            Internal_Format = GL_RGB;
+            image_format = GL_RGB;
+            internal_format = GL_RGB;
             break;
         case 4:
-            Image_Format = GL_RGBA;
-            Internal_Format = GL_RGBA;
+            image_format = GL_RGBA;
+            internal_format = GL_RGBA;
             break;
         default:
             LOGE(kTag, "Wrong channels:%d", channels);
             goto end;
     }
 
-    glBindTexture(GL_TEXTURE_2D, this->ID);
-    glTexImage2D(GL_TEXTURE_2D, 0, this->Internal_Format, Width, Height, 0, this->Image_Format,
+    LOGE(kTag, "channels:%d, image_format:%d, internal_format:%d", channels, image_format, internal_format);
+    glBindTexture(GL_TEXTURE_2D, this->id_);
+    LOGE(kTag, "error1:%d", glGetError());
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width_, height_, 0, image_format,
                  GL_UNSIGNED_BYTE, data);
+    LOGE(kTag, "error2:%d", glGetError());
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, this->Wrap_S);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, this->Wrap_T);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, this->Filter_Min);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, this->Filter_Max);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
+    LOGE(kTag, "error3:%d", glGetError());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);
+    LOGE(kTag, "error4:%d", glGetError());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter_min);
+    LOGE(kTag, "error5:%d", glGetError());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter_max);
+    LOGE(kTag, "error6:%d", glGetError());
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
     end:
     stbi_image_free(data);
-}
-
-void Texture2D::Bind() const {
-    glBindTexture(GL_TEXTURE_2D, this->ID);
 }

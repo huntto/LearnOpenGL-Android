@@ -7,7 +7,7 @@
 #include <EGL/egl.h>
 
 #include "log.h"
-#include "ResourceManager.h"
+#include "resource_manager.h"
 
 static float GetCurrentTime() {
     struct timespec time;
@@ -53,7 +53,7 @@ void android_main(struct android_app *app) {
     Application *my_app = new Application;
     float last_time;
 
-    ResourceManager::Context = app;
+    ResourceManager::context = app;
     app->onAppCmd = HandleCommand;
     app->userData = my_app;
 
