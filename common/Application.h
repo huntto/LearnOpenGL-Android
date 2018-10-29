@@ -8,6 +8,7 @@
 
 #include <EGL/eglplatform.h>
 #include <EGL/egl.h>
+#include <glm/glm.hpp>
 
 class Application {
 public:
@@ -23,11 +24,15 @@ protected:
     bool CreateWindow(EGLNativeWindowType egl_native_window,
                       EGLNativeDisplayType egl_native_display);
 
+    void UpdateWindowSize();
+
     EGLint width_;
     EGLint height_;
     EGLSurface egl_surface_;
     EGLDisplay egl_display_;
     void *data_;
+    glm::mat4 projection_matrix_;
+    glm::mat4 view_matrix_;
 
 };
 

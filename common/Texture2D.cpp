@@ -40,21 +40,15 @@ void Texture2D::Generate(const std::string &filename,
             goto end;
     }
 
-    LOGE(kTag, "channels:%d, image_format:%d, internal_format:%d", channels, image_format, internal_format);
     glBindTexture(GL_TEXTURE_2D, this->id_);
-    LOGE(kTag, "error1:%d", glGetError());
     glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width_, height_, 0, image_format,
                  GL_UNSIGNED_BYTE, data);
-    LOGE(kTag, "error2:%d", glGetError());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
-    LOGE(kTag, "error3:%d", glGetError());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);
-    LOGE(kTag, "error4:%d", glGetError());
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter_min);
-    LOGE(kTag, "error5:%d", glGetError());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter_max);
-    LOGE(kTag, "error6:%d", glGetError());
 
     glBindTexture(GL_TEXTURE_2D, 0);
 

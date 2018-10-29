@@ -11,8 +11,8 @@
 #include <android_native_app_glue.h>
 #include <map>
 
-#include "Shader.h"
-#include "Texture2D.h"
+#include "shader.h"
+#include "texture2d.h"
 
 class ResourceManager {
 public:
