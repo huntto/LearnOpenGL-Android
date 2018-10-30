@@ -38,7 +38,7 @@ static GLuint LoadShader(GLenum type, const char *shader_src) {
         if (info_length > 1) {
             char *info_log = static_cast<char *>(malloc(sizeof(char) * info_length));
 
-            glGetProgramInfoLog(shader, info_length, NULL, info_log);
+            glGetShaderInfoLog(shader, info_length, NULL, info_log);
             LOGE(kTag, "Error compiling shader:\n%s\n%s\n", shader_src, info_log);
 
             free(info_log);

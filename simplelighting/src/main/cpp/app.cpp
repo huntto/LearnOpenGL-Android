@@ -100,8 +100,14 @@ void Application::Draw() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+
+        glm::mat4 projection = glm::perspective(glm::radians(camera_.get_zoom()),
+                                                (float) width_ / (float) height_, 0.1f, 100.0f);
+        glm::mat4 view = camera_.GetViewMatrix();
+
         SimpleLighting *simple_lighting = static_cast<SimpleLighting *>(data_);
-        simple_lighting->Draw(projection_matrix_, view_matrix_);
+        simple_lighting->Draw(camera_.get_position(), projection, view);
+
         eglSwapBuffers(egl_display_, egl_surface_);
     }
 }
@@ -120,10 +126,7 @@ bool Application::Init(EGLNativeWindowType egl_native_window,
         SimpleLighting *simple_lighting = new SimpleLighting;
         data_ = simple_lighting;
 
-        projection_matrix_ = glm::perspective(glm::radians(45.0f),
-                                              (float) width_ / (float) height_,
-                                              0.1f, 100.0f);
-        view_matrix_ = glm::mat4(1.0f);
+        camera_ = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
         glEnable(GL_DEPTH_TEST);
         return true;
@@ -141,15 +144,8 @@ void Application::Destroy() {
 
 void Application::Update(float delta_time) {
     if (data_ != nullptr) {
-
-        float radius = 5.0f;
         static float time = 0;
         time += delta_time;
-        float cam_x = static_cast<float>(sin(time) * radius);
-        float cam_z = static_cast<float>(cos(time) * radius);
-        view_matrix_ = glm::lookAt(glm::vec3(cam_x, 2.0, cam_z),
-                                   glm::vec3(0.0, 0.0, 0.0),
-                                   glm::vec3(0.0, 1.0, 0.0));
 
         SimpleLighting *simple_lighting = static_cast<SimpleLighting *>(data_);
         simple_lighting->Update(delta_time);

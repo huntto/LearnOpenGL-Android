@@ -10,6 +10,8 @@
 #include <EGL/egl.h>
 #include <glm/glm.hpp>
 
+#include "camera.h"
+
 class Application {
 public:
     bool Init(EGLNativeWindowType egl_native_window, EGLNativeDisplayType egl_native_display);
@@ -33,7 +35,7 @@ protected:
     void *data_;
     glm::mat4 projection_matrix_;
     glm::mat4 view_matrix_;
-
+    Camera camera_;
 };
 
 #endif //ANDROID_OPENGLES_3_0_APP_H
