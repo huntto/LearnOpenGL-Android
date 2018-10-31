@@ -49,6 +49,58 @@ static void HandleCommand(struct android_app *app, int32_t cmd) {
     }
 }
 
+static int32_t HandleMotionEvent(struct android_app *app, AInputEvent *event) {
+    Application *my_app = (Application *) app->userData;
+    if (my_app == NULL) {
+        return 0;
+    }
+
+    size_t pointer_count;
+    bool handled;
+    bool (Application::*handle_touch_func)(int32_t, float, float);
+    switch (AMotionEvent_getAction(event)) {
+        case AMOTION_EVENT_ACTION_POINTER_DOWN:
+        case AMOTION_EVENT_ACTION_DOWN:
+            handle_touch_func = &Application::OnTouchDown;
+            break;
+        case AMOTION_EVENT_ACTION_MOVE:
+            handle_touch_func = &Application::OnTouchMove;
+            break;
+        case AMOTION_EVENT_ACTION_UP:
+        case AMOTION_EVENT_ACTION_POINTER_UP:
+            handle_touch_func = &Application::OnTouchUp;
+            break;
+        case AMOTION_EVENT_ACTION_CANCEL:
+            return my_app->OnTouchCancel();
+        default:
+            return false;
+    }
+
+    if (handle_touch_func != nullptr) {
+        pointer_count = AMotionEvent_getPointerCount(event);
+        handled = true;
+        for (size_t i = 0; i < pointer_count; ++i) {
+            int32_t pid = AMotionEvent_getPointerId(event, i);
+            float x = AMotionEvent_getX(event, i);
+            float y = AMotionEvent_getY(event, i);
+            handled |= (my_app->*handle_touch_func)(pid, x, y);
+        }
+        return handled;
+    }
+    return false;
+}
+
+static int32_t HandleInputEvent(struct android_app *app, AInputEvent *event) {
+    switch (AInputEvent_getType(event)) {
+
+        case AINPUT_EVENT_TYPE_MOTION:
+            return HandleMotionEvent(app, event);
+        case AINPUT_EVENT_TYPE_KEY:
+        default:
+            return false;
+    }
+}
+
 void android_main(struct android_app *app) {
     Application *my_app = new Application;
     float last_time;
@@ -56,6 +108,7 @@ void android_main(struct android_app *app) {
     ResourceManager::context = app;
     app->onAppCmd = HandleCommand;
     app->userData = my_app;
+    app->onInputEvent = HandleInputEvent;
 
     last_time = GetCurrentTime();
 
