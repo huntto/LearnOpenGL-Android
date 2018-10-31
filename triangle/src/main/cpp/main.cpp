@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "application.h"
 
 #include <GLES3/gl3.h>
 #include <malloc.h>

@@ -22,6 +22,7 @@ include_directories(${COMMON_SRC_DIR}
 add_library(
         texture SHARED
         app.cpp
+        android_main.cpp
         mix_texture.cpp
         ${COMMON_SRC}
 )

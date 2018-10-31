@@ -23,6 +23,7 @@ add_library(
         cube SHARED
         app.cpp
         cube.cpp
+        android_main.cpp
         ${COMMON_SRC}
 )
 

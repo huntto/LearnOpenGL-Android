@@ -22,6 +22,7 @@ include_directories(${COMMON_SRC_DIR}
 add_library(
         triangle SHARED
         main.cpp
+        android_main.cpp
         triangle.cpp
         ${COMMON_SRC}
 )

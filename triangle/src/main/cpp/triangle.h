@@ -5,7 +5,7 @@
 #ifndef ANDROID_OPENGLES_3_0_TRIANGLE_H
 #define ANDROID_OPENGLES_3_0_TRIANGLE_H
 
-#include <Shader.h>
+#include <shader.h>
 
 class Triangle {
 public:

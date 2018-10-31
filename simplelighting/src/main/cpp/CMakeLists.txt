@@ -22,7 +22,8 @@ include_directories(${COMMON_SRC_DIR}
 set(LIB_NAME simple_lighting)
 add_library(
         ${LIB_NAME} SHARED
-        app.cpp
+        application.cpp
+        android_main.cpp
         simple_lighting.cpp
         ${COMMON_SRC}
 )
