@@ -37,6 +37,7 @@ private:
     glm::mat4 light_model_matrix_;
 
     glm::vec3 light_pos_;
+    glm::vec3 light_color_;
 };
 
 #endif //ANDROID_OPENGLES_3_0_SIMPLE_LIGHTING_H

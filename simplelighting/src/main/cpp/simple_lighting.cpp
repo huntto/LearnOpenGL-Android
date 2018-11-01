@@ -21,9 +21,11 @@ SimpleLighting::SimpleLighting() {
     std::string light_fragment_shader_path
             = ResourceManager::ExtractAssetFileToInternal("light_fragment_shader.glsl", true);
 
-    object_shader_ = ResourceManager::LoadShader(object_vertex_shader_path, object_fragment_shader_path,
+    object_shader_ = ResourceManager::LoadShader(object_vertex_shader_path,
+                                                 object_fragment_shader_path,
                                                  "object-shader");
-    light_shader_ = ResourceManager::LoadShader(light_vertex_shader_path, light_fragment_shader_path,
+    light_shader_ = ResourceManager::LoadShader(light_vertex_shader_path,
+                                                light_fragment_shader_path,
                                                 "light-shader");
 
     float vertices[] = {
@@ -109,7 +111,12 @@ SimpleLighting::SimpleLighting() {
 }
 
 void SimpleLighting::Update(float delta_time) {
+    static float time = 0;
+    time += delta_time;
 
+    light_color_.x = static_cast<float>(sin(time * 2.0f));
+    light_color_.y = static_cast<float>(sin(time * 0.7f));
+    light_color_.z = static_cast<float>(sin(time * 1.3f));
 }
 
 void SimpleLighting::Draw(const glm::vec3 &camera_pos,
@@ -122,13 +129,26 @@ void SimpleLighting::Draw(const glm::vec3 &camera_pos,
     object_shader_.SetMatrix4("model", object_model_matrix_);
     object_shader_.SetMatrix4("projection", projection_matrix);
     object_shader_.SetMatrix4("view", view_matrix);
-    object_shader_.SetVector3f("lightPos", light_pos_);
     object_shader_.SetVector3f("viewPos", camera_pos);
+
+    object_shader_.SetVector3f("light.position", light_pos_);
+    object_shader_.SetVector3f("light.ambient", 0.2f, 0.2f, 0.2f);
+    object_shader_.SetVector3f("light.diffuse", 0.5f, 0.5f, 0.5f); // 将光照调暗了一些以搭配场景
+    object_shader_.SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
+
+    glm::vec3 diffuse_color = light_color_ * glm::vec3(0.5f);
+    glm::vec3 ambient_color = light_color_ * glm::vec3(0.2f);
+
+    object_shader_.SetVector3f("material.ambient", ambient_color);
+    object_shader_.SetVector3f("material.diffuse", diffuse_color);
+    object_shader_.SetVector3f("material.specular", 0.5f, 0.5f, 0.5f);
+    object_shader_.SetFloat("material.shininess", 32.0f);
 
     glBindVertexArray(object_vao_);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     light_shader_.Use();
+    light_shader_.SetVector3f("lightColor", light_color_);
     light_shader_.SetMatrix4("model", light_model_matrix_);
     light_shader_.SetMatrix4("projection", projection_matrix);
     light_shader_.SetMatrix4("view", view_matrix);

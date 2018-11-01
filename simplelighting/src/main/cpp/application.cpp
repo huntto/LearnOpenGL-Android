@@ -42,11 +42,11 @@ bool Application::CreateWindow(EGLNativeWindowType egl_native_window,
 
     EGLint num_configs = 0;
     EGLint attrib_list[] = {
-            EGL_RED_SIZE, 8,
-            EGL_GREEN_SIZE, 8,
-            EGL_BLUE_SIZE, 8,
+            EGL_RED_SIZE, 5,
+            EGL_GREEN_SIZE, 6,
+            EGL_BLUE_SIZE, 5,
             EGL_ALPHA_SIZE, 8,
-            EGL_DEPTH_SIZE, EGL_DONT_CARE,
+            EGL_DEPTH_SIZE, 8,
             EGL_STENCIL_SIZE, EGL_DONT_CARE,
             EGL_SAMPLE_BUFFERS, 0,
             EGL_RENDERABLE_TYPE, GetContextRenderableType(egl_display_),
@@ -212,6 +212,8 @@ bool Application::Init(EGLNativeWindowType egl_native_window,
         camera_ = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
         glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+        glDepthMask(GL_TRUE);
         return true;
     }
     return false;
