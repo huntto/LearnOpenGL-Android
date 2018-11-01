@@ -38,6 +38,9 @@ private:
 
     glm::vec3 light_pos_;
     glm::vec3 light_color_;
+
+    Texture2D diffuse_map_;
+    Texture2D specular_map_;
 };
 
 #endif //ANDROID_OPENGLES_3_0_SIMPLE_LIGHTING_H

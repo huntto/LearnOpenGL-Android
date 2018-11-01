@@ -21,6 +21,9 @@ SimpleLighting::SimpleLighting() {
     std::string light_fragment_shader_path
             = ResourceManager::ExtractAssetFileToInternal("light_fragment_shader.glsl", true);
 
+    std::string container_path = ResourceManager::ExtractAssetFileToInternal("container2.png");
+    std::string container_specular_path = ResourceManager::ExtractAssetFileToInternal("container2_specular.png");
+
     object_shader_ = ResourceManager::LoadShader(object_vertex_shader_path,
                                                  object_fragment_shader_path,
                                                  "object-shader");
@@ -28,48 +31,52 @@ SimpleLighting::SimpleLighting() {
                                                 light_fragment_shader_path,
                                                 "light-shader");
 
+    diffuse_map_.Generate(container_path);
+    specular_map_.Generate(container_specular_path);
+
     float vertices[] = {
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            // positions          // normals           // texture coords
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
 
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-            0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
 
-            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 
-            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-            0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
 
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
     };
 
     glGenVertexArrays(1, &object_vao_);
@@ -80,12 +87,16 @@ SimpleLighting::SimpleLighting() {
     glBindBuffer(GL_ARRAY_BUFFER, object_vbo_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                           (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+                          (void *) (6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
 
@@ -97,7 +108,7 @@ SimpleLighting::SimpleLighting() {
     glBindBuffer(GL_ARRAY_BUFFER, light_vbo_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
 
     glBindVertexArray(0);
@@ -108,23 +119,18 @@ SimpleLighting::SimpleLighting() {
     light_model_matrix_ = glm::mat4(1.0f);
     light_model_matrix_ = glm::translate(light_model_matrix_, light_pos_);
     light_model_matrix_ = glm::scale(light_model_matrix_, glm::vec3(0.2f));
+
+    light_color_ = glm::vec3(1.0f);
 }
 
 void SimpleLighting::Update(float delta_time) {
-    static float time = 0;
-    time += delta_time;
 
-    light_color_.x = static_cast<float>(sin(time * 2.0f));
-    light_color_.y = static_cast<float>(sin(time * 0.7f));
-    light_color_.z = static_cast<float>(sin(time * 1.3f));
 }
 
 void SimpleLighting::Draw(const glm::vec3 &camera_pos,
                           const glm::mat4 &projection_matrix,
                           const glm::mat4 &view_matrix) {
     object_shader_.Use();
-    object_shader_.SetVector3f("objectColor", 1.0f, 0.5f, 0.31f);
-    object_shader_.SetVector3f("lightColor", 1.0f, 1.0f, 1.0f);
 
     object_shader_.SetMatrix4("model", object_model_matrix_);
     object_shader_.SetMatrix4("projection", projection_matrix);
@@ -136,13 +142,15 @@ void SimpleLighting::Draw(const glm::vec3 &camera_pos,
     object_shader_.SetVector3f("light.diffuse", 0.5f, 0.5f, 0.5f); // 将光照调暗了一些以搭配场景
     object_shader_.SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
 
-    glm::vec3 diffuse_color = light_color_ * glm::vec3(0.5f);
-    glm::vec3 ambient_color = light_color_ * glm::vec3(0.2f);
-
-    object_shader_.SetVector3f("material.ambient", ambient_color);
-    object_shader_.SetVector3f("material.diffuse", diffuse_color);
-    object_shader_.SetVector3f("material.specular", 0.5f, 0.5f, 0.5f);
+    object_shader_.SetInteger("material.diffuse", 0);
+    object_shader_.SetInteger("material.specular", 1);
     object_shader_.SetFloat("material.shininess", 32.0f);
+
+    glActiveTexture(GL_TEXTURE0);
+    diffuse_map_.Bind();
+
+    glActiveTexture(GL_TEXTURE1);
+    specular_map_.Bind();
 
     glBindVertexArray(object_vao_);
     glDrawArrays(GL_TRIANGLES, 0, 36);
