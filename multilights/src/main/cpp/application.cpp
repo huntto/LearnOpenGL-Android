@@ -105,10 +105,10 @@ void Application::Draw() {
 
         glm::mat4 projection = glm::perspective(glm::radians(camera_.get_zoom()),
                                                 (float) width_ / (float) height_, 0.1f, 100.0f);
-        glm::mat4 view = camera_.GetViewMatrix();
+
 
         MultiLights *simple_lighting = static_cast<MultiLights *>(data_);
-        simple_lighting->Draw(camera_.get_position(), projection, view);
+        simple_lighting->Draw(camera_, projection);
 
         eglSwapBuffers(egl_display_, egl_surface_);
     }

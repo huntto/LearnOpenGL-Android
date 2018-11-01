@@ -33,7 +33,7 @@ public:
            float yaw,
            float pitch);
 
-    glm::mat4 GetViewMatrix() {
+    glm::mat4 GetViewMatrix() const {
         return glm::lookAt(position_, position_ + front_, up_);
     }
 
@@ -60,12 +60,16 @@ public:
             zoom_ = 45.0f;
     }
 
-    glm::vec3 get_position() {
+    glm::vec3 get_position() const {
         return position_;
     }
 
-    float get_zoom() {
+    float get_zoom() const {
         return zoom_;
+    }
+
+    glm::vec3 get_front() const {
+        return front_;
     }
 
 private:

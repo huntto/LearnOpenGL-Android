@@ -22,7 +22,8 @@ MultiLights::MultiLights() {
             = ResourceManager::ExtractAssetFileToInternal("light_fragment_shader.glsl", true);
 
     std::string container_path = ResourceManager::ExtractAssetFileToInternal("container2.png");
-    std::string container_specular_path = ResourceManager::ExtractAssetFileToInternal("container2_specular.png");
+    std::string container_specular_path = ResourceManager::ExtractAssetFileToInternal(
+            "container2_specular.png");
 
     object_shader_ = ResourceManager::LoadShader(object_vertex_shader_path,
                                                  object_fragment_shader_path,
@@ -113,50 +114,75 @@ MultiLights::MultiLights() {
 
     glBindVertexArray(0);
 
-    object_model_matrix_ = glm::mat4(1.0f);
-
-    light_pos_ = glm::vec3(1.2f, 1.0f, 2.0f);
-    light_model_matrix_ = glm::mat4(1.0f);
-    light_model_matrix_ = glm::translate(light_model_matrix_, light_pos_);
-    light_model_matrix_ = glm::scale(light_model_matrix_, glm::vec3(0.2f));
-
     light_color_ = glm::vec3(1.0f);
+
+    point_light_positions_ = new glm::vec3[4]{
+            glm::vec3(0.7f, 0.2f, 2.0f),
+            glm::vec3(2.3f, -3.3f, -4.0f),
+            glm::vec3(-4.0f, 2.0f, -12.0f),
+            glm::vec3(0.0f, 0.0f, -3.0f)
+    };
 }
 
 void MultiLights::Update(float delta_time) {
 
 }
 
-void MultiLights::Draw(const glm::vec3 &camera_pos,
-                          const glm::mat4 &projection_matrix,
-                          const glm::mat4 &view_matrix) {
+void MultiLights::Draw(const Camera &camera,
+                       const glm::mat4 &projection_matrix) {
+    glm::mat4 view = camera.GetViewMatrix();
     static glm::vec3 cube_positions[] = {
-            glm::vec3( 0.0f,  0.0f,  0.0f),
-            glm::vec3( 2.0f,  5.0f, -15.0f),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(2.0f, 5.0f, -15.0f),
             glm::vec3(-1.5f, -2.2f, -2.5f),
             glm::vec3(-3.8f, -2.0f, -12.3f),
-            glm::vec3( 2.4f, -0.4f, -3.5f),
-            glm::vec3(-1.7f,  3.0f, -7.5f),
-            glm::vec3( 1.3f, -2.0f, -2.5f),
-            glm::vec3( 1.5f,  2.0f, -2.5f),
-            glm::vec3( 1.5f,  0.2f, -1.5f),
-            glm::vec3(-1.3f,  1.0f, -1.5f)
+            glm::vec3(2.4f, -0.4f, -3.5f),
+            glm::vec3(-1.7f, 3.0f, -7.5f),
+            glm::vec3(1.3f, -2.0f, -2.5f),
+            glm::vec3(1.5f, 2.0f, -2.5f),
+            glm::vec3(1.5f, 0.2f, -1.5f),
+            glm::vec3(-1.3f, 1.0f, -1.5f)
     };
 
     object_shader_.Use();
 
     object_shader_.SetMatrix4("projection", projection_matrix);
-    object_shader_.SetMatrix4("view", view_matrix);
-    object_shader_.SetVector3f("viewPos", camera_pos);
-
-    object_shader_.SetVector3f("light.direction", -0.2f, -1.0f, -0.3f);
-    object_shader_.SetVector3f("light.ambient", 0.2f, 0.2f, 0.2f);
-    object_shader_.SetVector3f("light.diffuse", 0.5f, 0.5f, 0.5f);
-    object_shader_.SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
+    object_shader_.SetMatrix4("view", view);
+    object_shader_.SetVector3f("viewPos", camera.get_position());
 
     object_shader_.SetInteger("material.diffuse", 0);
     object_shader_.SetInteger("material.specular", 1);
     object_shader_.SetFloat("material.shininess", 32.0f);
+
+    object_shader_.SetVector3f("dirLight.direction", -0.2f, -1.0f, -0.3f);
+    object_shader_.SetVector3f("dirLight.ambient", 0.2f, 0.2f, 0.2f);
+    object_shader_.SetVector3f("dirLight.diffuse", 0.5f, 0.5f, 0.5f);
+    object_shader_.SetVector3f("dirLight.specular", 1.0f, 1.0f, 1.0f);
+
+    char * prefix = new char[100];
+    for (int i = 0; i < 4; ++i) {
+        sprintf(prefix, "pointLights[%d].", i);
+        std::string name(prefix);
+        object_shader_.SetVector3f((name + "position").c_str(), point_light_positions_[i]);
+        object_shader_.SetVector3f((name + "ambient").c_str(), 0.05f, 0.05f, 0.05f);
+        object_shader_.SetVector3f((name + "diffuse").c_str(), 0.8f, 0.8f, 0.8f);
+        object_shader_.SetVector3f((name + "specular").c_str(), 1.0f, 1.0f, 1.0f);
+        object_shader_.SetFloat((name + "constant").c_str(), 1.0f);
+        object_shader_.SetFloat((name + "linear").c_str(), 0.09);
+        object_shader_.SetFloat((name + "quadratic").c_str(), 0.032);
+    }
+
+
+    object_shader_.SetVector3f("spotLight.position", camera.get_position());
+    object_shader_.SetVector3f("spotLight.direction", camera.get_front());
+    object_shader_.SetVector3f("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+    object_shader_.SetVector3f("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+    object_shader_.SetVector3f("spotLight.specular", 1.0f, 1.0f, 1.0f);
+    object_shader_.SetFloat("spotLight.constant", 1.0f);
+    object_shader_.SetFloat("spotLight.linear", 0.09);
+    object_shader_.SetFloat("spotLight.quadratic", 0.032);
+    object_shader_.SetFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+    object_shader_.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
     glActiveTexture(GL_TEXTURE0);
     diffuse_map_.Bind();
@@ -178,12 +204,18 @@ void MultiLights::Draw(const glm::vec3 &camera_pos,
 
     light_shader_.Use();
     light_shader_.SetVector3f("lightColor", light_color_);
-    light_shader_.SetMatrix4("model", light_model_matrix_);
     light_shader_.SetMatrix4("projection", projection_matrix);
-    light_shader_.SetMatrix4("view", view_matrix);
+    light_shader_.SetMatrix4("view", view);
 
     glBindVertexArray(light_vao_);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    for (int i = 0; i < 4; ++i) {
+        glm::mat4 model(1.0);
+        model = glm::translate(model, point_light_positions_[i]);
+        model = glm::scale(model, glm::vec3(0.2f));
+        light_shader_.SetMatrix4("model", model);
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 }
 
 MultiLights::~MultiLights() {

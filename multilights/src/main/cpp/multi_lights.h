@@ -17,9 +17,8 @@ public:
 
     ~MultiLights();
 
-    void Draw(const glm::vec3 &camera_pos,
-              const glm::mat4 &projection_matrix,
-              const glm::mat4 &view_matrix);
+    void Draw(const Camera &camera,
+              const glm::mat4 &projection_matrix);
 
     void Update(float delta_time);
 
@@ -33,14 +32,12 @@ private:
     GLuint light_vao_;
     GLuint light_vbo_;
 
-    glm::mat4 object_model_matrix_;
-    glm::mat4 light_model_matrix_;
-
-    glm::vec3 light_pos_;
     glm::vec3 light_color_;
 
     Texture2D diffuse_map_;
     Texture2D specular_map_;
+
+    glm::vec3 * point_light_positions_;
 };
 
 #endif //ANDROID_OPENGLES_3_0_SIMPLE_LIGHTING_H
