@@ -16,7 +16,7 @@
 
 class ResourceManager {
 public:
-    static std::string ExtractAssetFileToInternal(const std::string &asset_filename,
+    static std::string ExtractAssetToInternal(const std::string &asset_filename,
                                                   bool force_replace = false);
 
     static Shader LoadShader(const std::string &vertex_shader_path,
@@ -41,6 +41,13 @@ private:
                                      const std::string &fragment_shader_path);
 
     static Texture2D LoadTextureFromFile(const std::string &filepath);
+
+
+    static std::string ExtractAssetFileToInternal(const std::string &asset_filename,
+                                                  bool force_replace = false);
+
+    static std::string ExtractAssetDirToInternal(const std::string &asset_dir,
+                                                 bool force_replace = false);
 
     static std::map<std::string, Shader> shaders_;
     static std::map<std::string, Texture2D> textures_;

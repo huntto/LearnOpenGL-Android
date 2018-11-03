@@ -12,17 +12,17 @@ const char *kTag = "Triangle";
 
 SimpleLighting::SimpleLighting() {
     std::string object_vertex_shader_path
-            = ResourceManager::ExtractAssetFileToInternal("object_vertex_shader.glsl", true);
+            = ResourceManager::ExtractAssetToInternal("object_vertex_shader.glsl", true);
     std::string object_fragment_shader_path
-            = ResourceManager::ExtractAssetFileToInternal("object_fragment_shader.glsl", true);
+            = ResourceManager::ExtractAssetToInternal("object_fragment_shader.glsl", true);
 
     std::string light_vertex_shader_path
-            = ResourceManager::ExtractAssetFileToInternal("light_vertex_shader.glsl", true);
+            = ResourceManager::ExtractAssetToInternal("light_vertex_shader.glsl", true);
     std::string light_fragment_shader_path
-            = ResourceManager::ExtractAssetFileToInternal("light_fragment_shader.glsl", true);
+            = ResourceManager::ExtractAssetToInternal("light_fragment_shader.glsl", true);
 
-    std::string container_path = ResourceManager::ExtractAssetFileToInternal("container2.png");
-    std::string container_specular_path = ResourceManager::ExtractAssetFileToInternal("container2_specular.png");
+    std::string container_path = ResourceManager::ExtractAssetToInternal("container2.png");
+    std::string container_specular_path = ResourceManager::ExtractAssetToInternal("container2_specular.png");
 
     object_shader_ = ResourceManager::LoadShader(object_vertex_shader_path,
                                                  object_fragment_shader_path,

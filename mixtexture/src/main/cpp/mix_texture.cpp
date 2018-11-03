@@ -10,10 +10,10 @@
 const char *kTag = "Triangle";
 
 MixTexture::MixTexture() {
-    std::string vertex_shader_path = ResourceManager::ExtractAssetFileToInternal("vertex_shader.glsl", true);
-    std::string fragment_shader_path = ResourceManager::ExtractAssetFileToInternal("fragment_shader.glsl", true);
-    std::string awesomeface_path = ResourceManager::ExtractAssetFileToInternal("awesomeface.png", true);
-    std::string container_path = ResourceManager::ExtractAssetFileToInternal("container.jpg", true);
+    std::string vertex_shader_path = ResourceManager::ExtractAssetToInternal("vertex_shader.glsl", true);
+    std::string fragment_shader_path = ResourceManager::ExtractAssetToInternal("fragment_shader.glsl", true);
+    std::string awesomeface_path = ResourceManager::ExtractAssetToInternal("awesomeface.png", true);
+    std::string container_path = ResourceManager::ExtractAssetToInternal("container.jpg", true);
 
 
     shader_ = ResourceManager::LoadShader(vertex_shader_path, fragment_shader_path, "mix-textures");
