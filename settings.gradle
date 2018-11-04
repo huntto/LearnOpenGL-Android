@@ -1,1 +1,1 @@
-include ':triangle', ':mixtexture', ':cube', ':simplelighting', ':multilights'
+include ':triangle', ':mixtexture', ':cube', ':simplelighting', ':multilights', ':assimp'
